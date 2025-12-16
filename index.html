@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>정중동</title>
+
+  <style>
+    /* =========================
+       공통 설정 (1~2페이지 공통)
+       ========================= */
+    :root{
+      --bg:#ececec;
+      --paper:#ffffff;
+      --ink:#111111;
+
+      --radius:14px;
+      --shadow:0 10px 28px rgba(0,0,0,.1);
+
+      --screen-pad:12px; /* 화면 가장자리 여백 */
+    }
+
+    html, body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+    }
+
+    body{
+      font-family:
+        system-ui,
+        -apple-system,
+        "Apple SD Gothic Neo",
+        "Noto Sans KR",
+        "Malgun Gothic",
+        sans-serif;
+      -webkit-text-size-adjust:100%;
+    }
+
+    /* =========================
+       페이지 컨테이너
+       ========================= */
+.viewer{
+  height:100dvh;
+  overflow-y:auto;
+  padding:0;
+  box-sizing:border-box;
+  scroll-snap-type:y mandatory;
+}
+
+.page{
+  min-height:100dvh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  scroll-snap-align:start;
+}
+
+.paper{
+  width:100vw;
+  min-height:100dvh;   /* ✔ 화면보다 작아질 수 있게 */
+  height:auto;         /* ✔ 콘텐츠 높이에 따라 늘어남 */
+  background:var(--paper);
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+  position:relative;
+}
+
+
+
+    /* =========================
+       1페이지 : 포스터
+       ========================= */
+    .p1 img{
+      width:100%;
+      height:100%;
+      object-fit:contain; /* 잘리지 않게 */
+      display:block;
+    }
+
+    /* =========================
+       2페이지 : 텍스트 페이지
+       ========================= */
+
+    /* ===== 여기부터 2페이지 조절 ===== */
+
+    /* ① 제목 블록을 아래로 내리는 여백 */
+    .p2 .content{
+      position:absolute;
+      top:200px;     /* ← 이 값 키우면 정중동 전체가 아래로 내려감 */
+      left:0;
+      right:0;
+      padding:0 40px; /* ← 좌우 여백 */
+      box-sizing:border-box;
+    }
+
+/* =========================
+   2페이지 : 텍스트 페이지
+   ========================= */
+
+/* ② 글씨 크기 (화면 비율에 따라 자동 스케일) */
+.p2 .title{
+  font-size: clamp(28px, 6vw, 56px);   /* 정중동: 전통과 기술의 공명 */
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 16px 0;
+}
+
+.p2 .sub{
+  font-size: clamp(24px, 5.2vw, 48px); /* 김혜원 X 현종찬 */
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 80px 0;
+}
+
+.p2 .info{
+  font-size: clamp(20px, 3.8vw, 32px); /* 일시 / 장소 */
+  font-weight:900;
+  letter-spacing:-0.01em;
+  line-height:1.6;
+  margin:0;
+}
+
+/* =========================
+   3페이지 전용 스타일 (완전 분리)
+   ========================= */
+
+/* 3페이지 전체 */
+.p3{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+}
+
+/* 종이 */
+.p3 .paper{
+  width:min(860px, 100%);
+  height:100%;
+  background:#ffffff;
+  border-radius:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.1);
+}
+
+/* ===== 여기부터 조절 ===== */
+
+/* 위 여백 */
+.p3 .content{
+  padding:60px 40px 0 40px; /* ← 위 여백 / 좌우 여백 */
+  box-sizing:border-box;
+}
+
+/* 제목 */
+.p3 h1{
+  font-size: clamp(30px, 6.5vw, 64px); /* 연주 순서 */
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 20px 0;
+}
+
+/* 목차 전체 */
+.p3 .toc{
+  display:flex;
+  flex-direction:column;
+}
+
+/* 한 줄 */
+.p3 .row{
+  display:flex;
+  gap:24px;
+  align-items:flex-start;
+  padding:22px 0;
+  border-bottom:1px solid #eee;
+  font-size: clamp(18px, 4.2vw, 36px); /* 곡명 / 작곡가 */
+  font-weight:900;
+}
+
+/* 마지막 줄 구분선 제거 */
+.p3 .row.last{
+  border-bottom:0;
+}
+
+/* 곡명 (길면 자동 줄바꿈) */
+.p3 .left{
+  flex:1;
+  min-width:0;
+  white-space:normal;
+  word-break:keep-all;
+  overflow-wrap:anywhere;
+}
+
+/* 작곡가 (항상 첫 줄 기준 고정) */
+.p3 .right{
+  white-space:nowrap;
+  align-self:flex-start;
+}
+/* =========================
+   4–13페이지 공통 포맷
+   ========================= */
+.poem-center{
+  text-align: center;
+  margin: 0px 0;
+  line-height: 1.9;
+  font-family: "Nanum Brush Script", "Nanum Pen Script", cursive;
+  font-size: 0.8em;
+}
+
+:root{
+  /* 기본값 (페이지별로 override 가능, 화면 비율 기준 스케일) */
+  --u-top-space: 0px;
+  --u-title-mb: 15px;
+
+  --u-title-size: clamp(26px, 5.5vw, 52px); /* 타이틀 */
+  --u-body-size: clamp(20px, 3.6vw, 32px);  /* 본문 */
+  --u-line-height: 1.9;
+}
+
+.page.u{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+}
+
+.page.u .paper{
+  width:min(860px, 100%);
+  height:100%;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.1);
+
+  display:flex;
+  flex-direction:column;
+}
+
+.page.u .header{
+  height: var(--u-top-space);
+  flex-shrink:0;
+}
+
+.page.u .content{
+  padding: 0 40px;
+  box-sizing:border-box;
+}
+
+.page.u .title{
+  font-size: var(--u-title-size);
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 var(--u-title-mb) 0;
+}
+
+.page.u .body{
+  font-size: var(--u-body-size);
+  line-height: var(--u-line-height);
+  letter-spacing:-0.01em;
+  margin-top: -0.6em;
+  white-space:pre-line; /* 줄바꿈 유지 */
+}
+/* =========================
+   14페이지 전용 스타일
+   ========================= */
+
+/* 14페이지 전용 폰트/여백 변수 (화면 비율 기준) */
+:root{
+  --p14-title-size: clamp(22px, 4.8vw, 40px); /* 연주자 이름 */
+  --p14-body-size: clamp(14px, 3.4vw, 26px);  /* 연주자 설명 */
+
+  --p14-top-space: 120px;
+  --p14-block-gap: 60px;
+  --p14-title-mb: 0px;
+  --p14-first-title-mt: 0px;
+}
+
+.page.p14{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+}
+
+.page.p14 .paper{
+  width:min(860px, 100%);
+  height:100%;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.1);
+}
+
+.p14-content{
+  padding: var(--p14-top-space) 40px 0 40px;
+  box-sizing:border-box;
+}
+
+.p14-block{
+  margin-bottom: var(--p14-block-gap);
+}
+
+.p14-block.first .p14-title{
+  margin-top: var(--p14-first-title-mt);
+}
+
+.p14-title{
+  font-size: var(--p14-title-size); /* clamp 적용됨 */
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 var(--p14-title-mb) 0;
+}
+
+.p14-body{
+  font-size: var(--p14-body-size);  /* clamp 적용됨 */
+  line-height:1.5;
+  letter-spacing:-0.01em;
+  white-space:pre-line;
+  margin-top: -0.6em;
+}
+
+/* =========================
+   마지막 페이지 전용 스타일
+   ========================= */
+
+/* 마지막 페이지 전용 폰트/여백 변수 (화면 비율 기준) */
+:root{
+  --p15-title-size: clamp(22px, 4.8vw, 40px);   /* 조명감독 제목 */
+  --p15-body-size: clamp(14px, 3.4vw, 26px);    /* 조명감독 설명 */
+
+  --p15-credit-size: clamp(13px, 3.1vw, 22px);  /* 크레딧 전체 */
+  --p15-credit-line: 1.7;
+
+  --p15-top-space: 120px;
+  --p15-title-mb: 24px;
+  --p15-credit-top: 80px;
+}
+
+.page.p15{
+  justify-content:center;
+  align-items:flex-start;
+}
+
+.page.p15 .paper{
+  min-height: auto;
+  width:min(860px, 100%);
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.1);
+}
+
+.p15-content{
+  padding: var(--p15-top-space) 40px 0 40px;
+  box-sizing:border-box;
+}
+
+/* 조명감독 영역 */
+.p15-title{
+  font-size: var(--p15-title-size); /* clamp 적용 */
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:0 0 var(--p15-title-mb) 0;
+}
+
+.p15-body{
+  font-size: var(--p15-body-size);  /* clamp 적용 */
+  line-height:1.8;
+  letter-spacing:-0.01em;
+  white-space:pre-line;
+}
+
+/* 크레딧 */
+.p15-credit{
+  padding-top: var(--p15-credit-top);
+  margin-top: 0;
+  font-size: var(--p15-credit-size); /* clamp 적용 */
+  line-height: var(--p15-credit-line);
+  letter-spacing:-0.01em;
+  white-space:pre-line;
+}
+.p15-content{
+  display:flex;
+  flex-direction:column;
+  min-height:100dvh;
+}
+
+.p15-spacer{
+  flex:1;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="viewer">
+
+    <!-- =========================
+         1페이지 : 포스터
+         ========================= -->
+    <div class="page p1">
+      <div class="paper">
+        <img src="poster.png" alt="포스터" />
+      </div>
+    </div>
+
+    <!-- =========================
+         2페이지 : 공연 정보
+         ========================= -->
+    <div class="page p2">
+      <div class="paper">
+        <div class="content">
+          <p class="title">정중동: 전통과 기술의 공명</p>
+          <p class="sub">김혜원 X 현종찬</p>
+
+          <p class="info">일시: 2025. 12. 27. 토 16:00</p>
+          <p class="info">장소: 김희수아트센터 스페이스 원</p>
+        </div>
+      </div>
+    </div>
+<!-- =========================
+     3페이지 : 연주 순서
+     ========================= -->
+<div class="page p3">
+  <div class="paper">
+    <div class="content">
+      <h1>연주 순서</h1>
+
+      <div class="toc">
+        <div class="row">
+          <div class="left">반 평</div>
+          <div class="right">김혜원</div>
+        </div>
+        <div class="row">
+          <div class="left">가야금&amp;Computer</div>
+          <div class="right">현종찬</div>
+        </div>
+        <div class="row">
+          <div class="left">Fixed_1</div>
+          <div class="right">현종찬</div>
+        </div>
+        <div class="row">
+          <div class="left">Durante mi viaje(춤추는 아이)</div>
+          <div class="right">현종찬</div>
+        </div>
+        <div class="row">
+          <div class="left">Fixed_2</div>
+          <div class="right">현종찬</div>
+        </div>
+        <div class="row">
+          <div class="left">Inner Line II</div>
+          <div class="right">김혜원</div>
+        </div>
+        <div class="row">
+          <div class="left">장자못 매트릭스</div>
+          <div class="right">김혜원</div>
+        </div>
+        <div class="row last">
+          <div class="left">정중동</div>
+          <div class="right">현종찬</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">반평</div>
+      <div class="body"><div class="poem-center">
+  꽃무덤에려 버동버동
+  너나들이도 여희였고
+  가마어게 자드락비
+  돌림쟁이 날송장이다.
+</div>
+우리는 언제나 당시의 경험과 생각으로 ’죽음‘을 맞이한다. 
+약 10년 전, 그 단어는 내게 잘못된 해방과 발버둥의 끝자락이었다. 학교・또래・사회적 시선 속에서 ‘다름’은 쉽게 고립을 만들고, 감정은 서서히 닫혀갔다.
+『반 평』 은 그 시절 내가 지닌 물리적, 정서적 거리감을 기반으로 만들어졌으며, 단지 공간의 크기가 아닌 그 안에서 선택의 여지가 없던 마음의 면적을 의미한다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">가야금&amp;Computer</div>
+      <div class="body">
+25현 가야금과 컴퓨터 음악의 결합을 통해, 전통 악기의 연주 기법과 음색을 현대 전자음향의 맥락 속에서 확장하려는 작품이다. 특히 소리의 시작 이후 지속·잔향·여백을 중시하는 한국 전통음악의 미학을 전자음향과 결합하여, 새로운 음악적 시간과 공간을 구성한다. 작곡가는 평균율 기반의 기존 조율 안에서 비반복적 4옥타브 조율 체계를 직접 설계함으로써, 옥타브 반복이 없는 음향적 긴장과 색채를 형성한다. 가야금의 핵심 주법인 농(Nong)과 미세한 음고 변화는 긴 음가와 종지에서 즉흥성과 섬세한 제어를 통해 살아 있는 음향을 만들어낸다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:5px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="body">
+
+또한 하모닉스, 비조화음, 퍼커시브·뮤트·노이즈 주법 등 비전통적 연주 기법을 적극적으로 탐구하여, 가야금을 선율 악기를 넘어 하나의 음향 생성체로 확장한다. 컴퓨터 파트는 fixed media와 라이브 일렉트로닉스로 구성되며, 녹음된 가야금 사운드를 기반으로 한 합성, 변조, 멀티채널 딜레이를 통해 독주 악기의 물리적 한계를 넘어서는 밀도와 공간성을 구현한다.
+이 작품은 전통 가야금의 정체성을 단순히 재현하는 데 머무르지 않고, 그 물리적·음향적 특성을 재구성함으로써 전통 악기와 현대 전자음악이 공존하는 새로운 작곡 언어를 제안한다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">Fixed_1</div>
+      <div class="body">
+구체적 재료들
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+    <div class="header"></div>
+    <div class="content">
+      <div class="title">Durante mi viaje<br>
+(춤추는 아이)</div>
+      <div class="body">
+인도차이나 반도 여행을 여행하면서 경험했던 것들에 대한 작업이다. 역사적으로 문화적 영향을 끼치던 나라들의 국경을 넘나들며 경험했던 변화, 식민지 시절부터 지금까지 이어져 온 문화와 풍습의 유사함 들을 표현하였다.
+작품의 주요한 요소는 '음가'의 변화이다. 동해안 별신굿 장구의 원추형 궁편은 그 모양의 특성상 상대적으로 긴 envelope 을 갖고 있으며 음악적 매개변수를 다양하게 변화할 수 있다. 
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:0px; --u-title-mb:0px;">
+  <div class="paper">
+    <div class="header"></div>
+    <div class="content">
+      <div class="body">
+
+궁편의 다양한 소리는 장구의 타악기적 특성을 벗어나 악기로서 매우 매력적인 모습과 가능성을 보여준다. 음가의 serial 들이 발전되면서 만들어 내는 리듬들이 때로는 음고를 만들고 제어한다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">Fixed_2</div>
+      <div class="body">
+구체적 재료들과 추상자료
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">Inner line II(2025)</div>
+      <div class="body">
+작곡자는 '성격유형장애'라는 이름 뒤에 숨겨진, 인간이 겪는 감정적 흔들림과 존재 방식을 바라본다. 
+병리적 명칭을 넘어 자아의 구조적 균열 속에서 더 깊은 이해와 공존의 가능성을 모색하고 싶었다. 
+
+이 곡은 우리 생각의 기준을 다시 세우는 것이 아닌, 시점 자체 변화를 주장하기 위해 보이지 않는 경계를 해체하고 재구축하는 시도를 나열하였다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">장자못 매트릭스(2025)</div>
+      <div class="body">
+‘장자못 매트릭스’는 순간이 공간으로 전환되며 남겨진 인지적 공백에서 출발한다. 
+
+집이 연못으로 바뀌어, 실체가 사라진 이후에도 남는 흔적과 비가시적 정보들을 불러온다. 
+
+전환 이후에 누적된 변화들이 만든 잔여물을 드러내어 사건 이후의 구조만 남겨보려 한다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u" style="--u-top-space:70px; --u-title-mb:0px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">정중동</div>
+      <div class="body">
+2중주의 음향적 제스처를 통해, 정지와 운동이 동시에 발생하는 시간의 상태를 탐구하는 작품이다. 
+가야금의 미세한 음고 변위와 지속은 내부의 긴장을 축적하고, 타악기의 타격과 잔향은 에너지의 분절과 확산을 만들어낸다. 
+두 악기는 충돌과 공명을 반복하며, 소리의 질량·밀도·여백이 끊임없이 재배열되는 과정 자체를 드러낸다.
+이 작품은 전통 악기를 재현의 대상으로 삼기보다, 동시대 음악적 사고 속에서 음향적 사건과 시간 구조를 생성하는 매체로 재정의한다.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u"
+     style="--u-top-space:70px; --u-title-mb:0px; --u-body-size:17px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">현종찬</div>
+      <div class="body">
+작곡가, 예술 교육자, 사운드 아티스트, 사운드 엔지니어 등 다양한 청각예술분야에 활동중이다. 독주악기와 전자음악 시리즈로 독주악기의 가능성을 전자음악을 통해 표현하며 한국(SICMF), 네덜란드(Composing Space, ICMC), 리투아니아(AHEAD), 그리스(ICMC), 일본(NWEAMO) 등에서 연주되었으며 여러 컴퓨터음악 연주회에서 작곡가 뿐만 아니라 음향기술 감독으로 활동하고 있다.
+특히 다양한 멀티채널 스피커 시스템을 통해서 공연예술에 실험을 통하여 현대예술의 여러 가능성을 제안한다. 지난 10년 넘게 여러 대학교에서 작곡을 위한 음향이론, 컴퓨터음악, 프로그래밍, 악기제작 등 소리의 개념과 활용을 가르치며 특히 전자음악 교육의 보편화를 연구 중이다.
+추계예술대, 중앙대, 경희대(국), 연세대 출강
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page u"
+     style="--u-top-space:70px; --u-title-mb:0px; --u-body-size:17px;">
+  <div class="paper">
+
+    <div class="header"></div>
+
+    <div class="content">
+      <div class="title">김혜원</div>
+      <div class="body">
+“소리가 나는 모든 것은 음악의 요소로써 동등한 위치를 가지며, 이는 진동이 발생하는 모든 객체의 소리를 수집하고 조합하여 작품으로 탄생시킬 수 있다.” 라는 마음으로 작업에 임한다. 추계예술대학교 학사 및 석사를 졸업(사사: 문성준 교수)하였으며, 작곡가∙사운드아티스트로 활동 중이다.
+The 43, 50rd ICMC(Shanghai, Boston), 대한민국 실내악 작곡제전, 홍콩 TICA 페스티벌, JTBC 고전적 하루 시즌2 등 국내∙외 연주회에 연주된 바 있으며, 제4회 IPFS, Beat: Connect, SPCS 등 음향감독 또는 기획을 맡아 연주회를 진행하였다.
+작곡가 동인 언(eon), 코미리아드(Comyriad)의 창단 멤버이며 최근에는 공간을 활용한 음악전시회(착즙의 함수, Objet)를 열어 음악을 향유하는 다양한 방법을 모색하고 있다.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- =========================
+     14페이지 : 연주자 소개
+     ========================= -->
+<div class="page p14"
+     style="
+       --p14-top-space:70px;      /* 페이지 맨 위 여백 */
+       --p14-block-gap:40px;       /* 가야금–타악기–양금 사이 간격 */
+       --p14-title-size:27px;      /* 타이틀 글씨 크기 */
+       --p14-body-size:22px;       /* 내용 글씨 크기 */
+       --p14-title-mb:0px;        /* 타이틀 ↔ 내용 간격 */
+     ">
+  <div class="paper">
+    <div class="p14-content">
+      <!-- 가야금 / 박예정 -->
+      <div class="p14-block first">
+        <div class="p14-title">가야금 / 박예정</div>
+        <div class="p14-body">
+가야금 &lt;Timelapse&gt; 정규 1집
+쇼케이스 및 발매
+평택시립국악관현악단 단원
+현 충북예고 강사
+
+        </div>
+      </div>
+      <!-- 타악기 / 이효정 -->
+      <div class="p14-block">
+        <div class="p14-title">타악기 / 이효정</div>
+        <div class="p14-body">
+서울시무형문화재 제44호 삼현육각 이수자(타악)
+고은 이동원 선생 추모 제13회
+전국농악경연대회 대상(2025)
+제10회 계양상국악제 풍물부문
+대상(2024)
+제2회 이효정 장구독주회 개최(2024)
+
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
+<!-- =========================
+     마지막 페이지 : 조명감독 + 양금
+     ========================= -->
+<div class="page p15"
+     style="
+       --p15-top-space:70px;
+       --p15-title-size:27px;
+       --p15-body-size:22px;
+       --p15-title-mb:6px;
+     ">
+  <div class="paper">
+    <div class="p15-content">
+
+      <!-- 조명감독 -->
+      <div class="p15-head">
+        <div class="p15-title">조명감독 / 김상호</div>
+        <div class="p15-body">아트앤테크 &lt;너를 만나다&gt;
+미디어 디렉터
+연극 &lt;록산느를 위한 발라드&gt;
+조명감독
+현대음악 &lt;The Burnning Earth&gt;
+조명디자인
+        </div>
+      </div>
+
+      <!-- 양금 -->
+      <div class="p15-head" style="margin-top:40px;">
+        <div class="p15-title">양금 / 한진구</div>
+        <div class="p15-body">서울대학교 음악대학 국악과 및
+동대학원 졸업(국악작곡)
+대표작 [제망모가] - 2019년
+창작산실 올해의신작
+'내 엄마의 엄마의 엄마의 이야기'
+        </div>
+      </div>
+   <div class="p15-spacer"></div>
+    </div>
+  </div>
+</div>
+<!-- =========================
+     크레딧 페이지
+     ========================= -->
+<div class="page p15"
+     style="
+       --p15-top-space:70px;
+       --p15-title-size:27px;
+       --p15-body-size:22px;
+       --p15-title-mb:6px;
+       --p15-credit-line:1.9;
+     ">
+  <div class="paper">
+    <div class="p15-content">
+
+      <div class="p15-credit">
+
+      <!-- credit -->
+      <div class="p15-head" style="margin-top:40px;">
+        <div class="p15-title">CREDIT</div>
+        <div class="p15-body">작곡가: 김혜원, 현종찬
+연주자: 박예정, 이효정, 한진구
+조명감독: 김상호
+조연출: 박승현, 방제영
+무대: 공태현, 이석현
+하우스: 강사라
+      </div>
+    </div>
+  </div>
+</div>
